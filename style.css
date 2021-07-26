@@ -1,0 +1,29 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: 3rem;
+  font-family: Arial sans-serif;
+}
+
+.board {
+  display: grid;
+  justify-content: center;
+  align-content: center;
+  height: 100%;
+  grid-template-columns: repeat(3, 200px);
+  grid-template-rows: repeat(3, 200px);
+  gap: 15px;
+}
+
+.square-border {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: 5px solid black;
+}
+.square-border:hover {
+  transition: all 0.2s ease-in;
+  transform: scale(1.1);
+}
