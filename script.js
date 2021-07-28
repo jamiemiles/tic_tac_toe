@@ -1,8 +1,14 @@
+// Factory Function creates player objects.
+const createPlayer = (name, symbol) => {
+  const setName = () => name;
+  const getSymbol = () => symbol;
+  return { setName, getSymbol };
+};
+
 const gameBoard = (() => {
   const board = ["", "", "", "", "", "", "", "", ""];
 
   const setGridLocation = (boardIndex, symbol) => {
-    console.log(`Board Updated at pos:${boardIndex} and symbol: ${symbol}`);
     board[boardIndex] = symbol;
   };
 
@@ -27,8 +33,9 @@ const displayController = (() => {
     square.addEventListener("click", (e) => {
       if (square.textContent) return;
       else {
-        square.textContent = gameLogic.playGame().getCurrentPlayerSymbol();
-        gameLogic.playGame().incrementRound();
+        square.textContent = gameLogic.getCurrentPlayerSymbol();
+        playRound.checkRound();
+        playRound.gameRound++;
       }
     });
   });
@@ -44,79 +51,80 @@ const displayController = (() => {
       gridElements[i].textContent = "";
     }
   };
+  return { gridElements };
 })();
 
-// Factory Function creates player objects.
-const createPlayer = (name, symbol) => {
-  const setName = () => name;
-  const getSymbol = () => {
-    return symbol;
+const playRound = (() => {
+  let gameRound = 0;
+
+  const checkRound = () => {
+    if (gameLogic.handleWin()) {
+      console.log("Winner!!");
+    } else if (playRound.gameRound === 8) {
+      gameLogic.handleDraw();
+    }
   };
-  return { setName, getSymbol };
-};
+
+  return {
+    checkRound,
+    gameRound,
+  };
+})();
 
 const gameLogic = (() => {
   const dataAttribute = document.querySelectorAll("[data-index]");
-  let gameRound = 0;
 
-  const playGame = () => {
-    const handleClick = () => {
-      dataAttribute.forEach((dataPoint) => {
-        let dataAttributeIndex = dataPoint.getAttribute("data-index");
-        dataPoint.addEventListener("click", () => {
-          gameBoard.setGridLocation(
-            dataAttributeIndex,
-            getCurrentPlayerSymbol()
-          );
-        });
-      });
-    };
-
-    const incrementRound = () => {
-      gameRound++;
-      if (gameRound === 9) handleDraw();
-    };
-
-    const getCurrentPlayerSymbol = () => {
-      return gameRound % 2 === 0
-        ? playerOne.getSymbol()
-        : playerTwo.getSymbol();
-    };
-
-    const handleDraw = () => {
-      console.log("It's a draw!");
-      gameOver();
-    };
-
-    const gameOver = () => {
-      gameRound = 0;
-    };
-
-    const handleWin = () => {
-      const winningPossibilities = [
-        // Horizontally.
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        // Vertically.
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        // Diagonally.
-        [0, 4, 8],
-        [2, 4, 6],
-      ];
-    };
-    return {
-      handleClick,
-      handleDraw,
-      handleWin,
-      getCurrentPlayerSymbol,
-      gameOver,
-      incrementRound,
-    };
+  const getCurrentPlayerSymbol = () => {
+    return playRound.gameRound % 2 === 0
+      ? playerOne.getSymbol()
+      : playerTwo.getSymbol();
   };
-  return { playGame };
+
+  const handleClick = () => {
+    gameLogic.dataAttribute.forEach((dataPoint) => {
+      let dataAttributeIndex = dataPoint.getAttribute("data-index");
+      dataPoint.addEventListener("click", () => {
+        gameBoard.setGridLocation(dataAttributeIndex, getCurrentPlayerSymbol());
+      });
+    });
+  };
+
+  const handleWin = () => {
+    const winCombination = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+    // If player symbols has index pos equal to a winning combination, player wins.
+    return winCombination.some((combination) => {
+      return combination.every((index) => {
+        return dataAttribute[index].textContent === getCurrentPlayerSymbol();
+      });
+    });
+  };
+
+  const handleDraw = () => {
+    console.log("It's a draw!");
+    gameOver();
+  };
+
+  const gameOver = () => {
+    playRound.gameRound = 0;
+  };
+
+  return {
+    getCurrentPlayerSymbol,
+    handleClick,
+    handleWin,
+    handleDraw,
+    gameOver,
+    dataAttribute,
+  };
 })();
 
 const playerOne = createPlayer("Jamie", "X");
