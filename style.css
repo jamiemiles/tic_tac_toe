@@ -14,6 +14,7 @@ body {
   justify-content: center;
   background-color: rgb(148, 100, 192);
   border: 1px solid black;
+  font-size: 50px;
 }
 
 .grid {
@@ -45,7 +46,9 @@ body {
   cursor: pointer;
 }
 .reset-btn {
+  z-index: 1;
   cursor: pointer;
+  font-size: 40px;
 }
 
 .hide {
@@ -53,4 +56,8 @@ body {
 }
 .show {
   opacity: 1;
+}
+.fade-background {
+  background-color: black;
+  opacity: 0.5;
 }

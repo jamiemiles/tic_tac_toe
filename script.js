@@ -28,6 +28,8 @@ const gameBoard = (() => {
 const displayController = (() => {
   const gridElements = document.querySelectorAll(".square-border");
   const resetButton = document.querySelector(".reset-btn");
+  const resetBtn = document.querySelector("button");
+  const body = document.querySelector("body");
 
   gridElements.forEach((square) => {
     square.addEventListener("click", (e) => {
@@ -51,7 +53,7 @@ const displayController = (() => {
       gridElements[i].textContent = "";
     }
   };
-  return { gridElements };
+  return { gridElements, resetBtn, body };
 })();
 
 const playRound = (() => {
@@ -59,6 +61,7 @@ const playRound = (() => {
 
   const checkRound = () => {
     if (gameLogic.handleWin()) {
+      gameLogic.gameOver();
       console.log("Winner!!");
     } else if (playRound.gameRound === 8) {
       gameLogic.handleDraw();
@@ -114,6 +117,8 @@ const gameLogic = (() => {
   };
 
   const gameOver = () => {
+    displayController.resetBtn.classList.remove("hide");
+    displayController.resetBtn.classList.add("show");
     playRound.gameRound = 0;
   };
 
@@ -126,6 +131,5 @@ const gameLogic = (() => {
     dataAttribute,
   };
 })();
-
 const playerOne = createPlayer("Jamie", "X");
 const playerTwo = createPlayer("Simone", "O");
